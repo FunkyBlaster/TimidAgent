@@ -25,14 +25,55 @@ class TimidAgent(Agent):
         If the pacman is in danger we return the direction to the ghost.
         """
 
-        # Your code
-        raise NotImplemented
+
+
     
     def getAction(self, state):
         """
         state - GameState
         
-        Fill in appropriate documentation
-        """
+        Returns the next action of pacman.
 
-        raise NotImplemented
+        If in danger, move
+        """
+        pacman = state.getPacmanState()
+        ghosts = state.getGhostStates()
+        heading = pacman.getDirection()
+
+        legal = state.getLegalPacmanActions()
+        # loop through each of the ghosts and evaluate whether there is danger
+        # if there is danger, return the optimal direction to turn
+        for ghost in ghosts:
+            ghostDir = self.inDanger(pacman, ghost)
+            # if ghost isnt in danger, check next ghost
+            if self.inDanger(pacman,ghost) is Directions.STOP:
+                continue
+
+            if Directions.REVERSE[heading] in legal:
+                return Directions.REVERSE[heading]
+            elif Directions.LEFT[heading] in legal:
+                return Directions.LEFT[heading]
+            elif Directions.RIGHT[heading] in legal:
+                return Directions.RIGHT[heading]
+            elif heading in legal:
+                return heading
+            else:
+                return Directions.STOP
+
+        # if there is no danger from any ghosts
+
+        # turn left
+        if Directions.LEFT[heading] in legal:
+            return Directions.LEFT[heading]
+        # continue forward
+        elif heading in legal:
+            return heading
+        # turn right
+        elif Directions.RIGHT[heading] in legal:
+            return Directions.RIGHT[heading]
+        # turn around
+        elif Directions.REVERSE[heading] in legal:
+            return Directions.REVERSE[heading]
+        else:
+            return Directions.STOP
+
